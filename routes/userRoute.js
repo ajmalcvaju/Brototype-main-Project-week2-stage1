@@ -70,4 +70,7 @@ router.get("/product-details", async (req, res) => {
     res.render("user/product-details", { product, login: 0 });
   }
 });
+router.get("/myProfile",async (req, res) =>{
+  res.render("user/my-profile")
+ })
 module.exports = router;

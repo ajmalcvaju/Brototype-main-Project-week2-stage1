@@ -1,3 +1,4 @@
+
 const User=require("../model/userModel")
 const adminUser=async(req,res)=>{
     try{

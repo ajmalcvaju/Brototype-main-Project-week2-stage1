@@ -11,6 +11,7 @@ const path = require("path");
 const Product = require("../model/productModel");
 const Category = require("../model/categoryModel");
 const User = require("../model/userModel");
+const Address=require("../model/addressModel");
 const userauth = require("../controllers/userauth");
 const middleware = require("../middlewares/middlewares");
 
@@ -71,6 +72,33 @@ router.get("/product-details", async (req, res) => {
   }
 });
 router.get("/myProfile",async (req, res) =>{
-  res.render("user/my-profile")
+  if (req.session && req.session.email) {
+    email=req.session.email
+    console.log(email)
+    let user = await User.findOne({email});
+    console.log(user)
+    res.render("user/my-profile",{user})
+  }
  })
+ router.get("/myProfile/my-address",async (req, res) =>{
+  res.render("user/address")
+ }) 
+ router.get("/myProfile/edit-address",async (req, res) =>{
+  res.render("user/address")
+ }) 
+ router.get("/myProfile/add-address",async (req, res) =>{
+  res.render("user/add-address")
+ }) 
+ router.post("/myProfile/add-address",async (req, res) =>{
+  const {houseName,street,district,state,pincode,addressType}=req.body
+  const email=req.session.email
+  // const userId=User.findOne({email}).populate(_id)
+  // console.log(userId) 
+  console.log(req.body)
+  
+  // const address=new Address({houseName:houseName,street:street,district:district,state:state,pincode:pincode,addressType:addressType})
+  // const addressData=await address.save()
+ 
+ }) 
+
 module.exports = router;

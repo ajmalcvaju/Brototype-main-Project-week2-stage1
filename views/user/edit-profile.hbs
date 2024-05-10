@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <!-- Design by foolishdeveloper.com -->
-    <title>Add Address</title>
+    <title>Edit Profile</title>
  
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -146,26 +146,20 @@ option{
 
     </style>
 </head>
+
 <body>
     <div class="background">
         <div class="shape"></div>
         <div class="shape"></div>
     </div>
-    <form action="/myProfile/add-address" method="post">
-      <h3>Add Address</h3>
-      <input type="text" name="houseName" placeholder="House Name">
-      <input type="text" name="street" placeholder="Street Name and Location">
-      <input type="text" name="district" placeholder="District">
-      <input type="text" name="state" placeholder="State">
-      <input type="text" name="pincode" placeholder="Pincode">
-      <label for="addressType" style="font-size: larger;">Address Type</label>
-      <div class="addressType">
-      <input  type="radio" name="addressType" value="Home" id="option1">
-      <label for="Home" style="font-size: medium;">Home</label><br>
-      <input type="radio" name="addressType" value="Work" id="option2">
-      <label for="Work" style="font-size: medium;" >Work</label>
-      </div>
-      <button type="submit">Add Address</button>
+    <form action="/edit-profile?id={{user._id}}" method="post">
+      <h3>Edit Profile</h3>
+      <input type="text" name="username" placeholder="Username" value="{{user.username}}">
+      <input type="text" name="fname" placeholder="First Name" value="{{user.fname}}">
+      <input type="text" name="lname" placeholder="Last Name" value="{{user.lname}}">
+      <input type="text" name="mobileNumber" placeholder="Mobile Number" value="{{user.mobileNumber}}">      
+      <button type="submit">Edit Profile</button>
     </form>
 </body>
+
 </html>

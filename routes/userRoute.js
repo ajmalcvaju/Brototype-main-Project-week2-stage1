@@ -14,6 +14,7 @@ const User = require("../model/userModel");
 const Address=require("../model/addressModel");
 const userauth = require("../controllers/userauth");
 const middleware = require("../middlewares/middlewares");
+const cartController=require("../controllers/cartController")
 
 router.get("/", async (req, res) => {
   if (req.session && req.session.email) {
@@ -72,33 +73,77 @@ router.get("/product-details", async (req, res) => {
   }
 });
 router.get("/myProfile",async (req, res) =>{
-  if (req.session && req.session.email) {
-    email=req.session.email
-    console.log(email)
+    const email=req.session.email
     let user = await User.findOne({email});
-    console.log(user)
-    res.render("user/my-profile",{user})
-  }
+    const userId = user._id
+    const addresses = await Address.find({ userId });
+    res.render("user/my-profile",{user,addresses})
+   
  })
- router.get("/myProfile/my-address",async (req, res) =>{
-  res.render("user/address")
- }) 
- router.get("/myProfile/edit-address",async (req, res) =>{
-  res.render("user/address")
- }) 
+
  router.get("/myProfile/add-address",async (req, res) =>{
   res.render("user/add-address")
  }) 
  router.post("/myProfile/add-address",async (req, res) =>{
   const {houseName,street,district,state,pincode,addressType}=req.body
   const email=req.session.email
-  // const userId=User.findOne({email}).populate(_id)
-  // console.log(userId) 
-  console.log(req.body)
+  const user = await User.findOne({ email });
+  const userId=user._id 
+  console.log(userId) 
+  const address=new Address({userId:userId,houseName:houseName,street:street,district:district,state:state,pincode:pincode,addressType:addressType})
+  const addressData=await address.save()
   
-  // const address=new Address({houseName:houseName,street:street,district:district,state:state,pincode:pincode,addressType:addressType})
-  // const addressData=await address.save()
- 
+  const addresses = await Address.find({ userId });
+  res.render("user/my-profile",{user,addresses})
+
  }) 
+ router.get("/edit-address",async (req, res) =>{
+  const addId=req.query.id
+  console.log(addId)
+  const address = await Address.findOne({ _id:addId });
+  res.render("user/edit-address",{address})
+ })  
+ router.post("/edit-address",async (req, res) =>{
+  const addId=req.query.id
+  console.log(addId)
+  const {houseName,street,district,state,pincode,addressType}=req.body
+  await Address.updateOne(
+    { _id: addId },
+    { $set: {houseName,street,district,state,pincode,addressType} }
+  );
+  const email=req.session.email
+    let user = await User.findOne({email});
+    const userId = user._id
+    const addresses = await Address.find({ userId });
+  res.render("user/my-profile",{user,addresses}) 
+ }) 
+ router.get("/delete-address",async (req, res) => {
+  let addId = req.query.id;
+  await Address.deleteOne({ _id: addId });
+  res.redirect("/myProfile");
+});
+router.get("/edit-profile",async (req, res) => {
+  const email=req.session.email
+  let user = await User.findOne({email});
+  res.render("user/edit-profile",{user})
+});
+router.post("/edit-profile",async (req, res) => {
+  let userId = req.query.id;
+  const {username,fname,lname,mobileNumber}=req.body
+  await User.updateOne(
+    { _id: userId },
+    { $set: {username,fname,lname,mobileNumber} }
+  )
+  res.redirect("/myProfile")
+});
+
+const hbs = require('hbs');
+hbs.registerHelper('incrementIndex', function(index) {
+    return index + 1;
+});
+
+router.post('/add-to-cart', cartController.addToCart);
+router.post('/update-cart', cartController.updateCart);
+router.post('/checkout', cartController.checkout);
 
 module.exports = router;

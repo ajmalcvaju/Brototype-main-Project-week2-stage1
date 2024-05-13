@@ -15,6 +15,7 @@ const Address=require("../model/addressModel");
 const userauth = require("../controllers/userauth");
 const middleware = require("../middlewares/middlewares");
 const cartController=require("../controllers/cartController")
+const Cart=require("../model/cartModel")
 
 router.get("/", async (req, res) => {
   if (req.session && req.session.email) {
@@ -74,7 +75,7 @@ router.get("/product-details", async (req, res) => {
 });
 router.get("/myProfile",async (req, res) =>{
     const email=req.session.email
-    let user = await User.findOne({email});
+    const user = await User.findOne({email});
     const userId = user._id
     const addresses = await Address.find({ userId });
     res.render("user/my-profile",{user,addresses})
@@ -112,23 +113,23 @@ router.get("/myProfile",async (req, res) =>{
     { $set: {houseName,street,district,state,pincode,addressType} }
   );
   const email=req.session.email
-    let user = await User.findOne({email});
+    const user = await User.findOne({email});
     const userId = user._id
     const addresses = await Address.find({ userId });
   res.render("user/my-profile",{user,addresses}) 
  }) 
- router.get("/delete-address",async (req, res) => {
-  let addId = req.query.id;
-  await Address.deleteOne({ _id: addId });
+ router.get("/deconste-address",async (req, res) => {
+  const addId = req.query.id;
+  await Address.deconsteOne({ _id: addId });
   res.redirect("/myProfile");
 });
 router.get("/edit-profile",async (req, res) => {
   const email=req.session.email
-  let user = await User.findOne({email});
+  const user = await User.findOne({email});
   res.render("user/edit-profile",{user})
 });
 router.post("/edit-profile",async (req, res) => {
-  let userId = req.query.id;
+  const userId = req.query.id;
   const {username,fname,lname,mobileNumber}=req.body
   await User.updateOne(
     { _id: userId },
@@ -142,8 +143,14 @@ hbs.registerHelper('incrementIndex', function(index) {
     return index + 1;
 });
 
-router.post('/add-to-cart', cartController.addToCart);
-router.post('/update-cart', cartController.updateCart);
-router.post('/checkout', cartController.checkout);
+router.get('/add-to-cart',cartController.addToCart);
+// router.post('/update-cart', cartController.updateCart);
+// router.post('/checkout', cartController.checkout);
+
+router.get('/cart', cartController.cart);
+router.get('/incrementItem', cartController.incCart);
+router.get('/decrementItem', cartController.decCart);
+
+router.get('/checkout', cartController.checkout);
 
 module.exports = router;
